@@ -10,8 +10,7 @@ from flask_cors import CORS
 sys.path.append('.')
 
 from security.auth import security
-from follow.followers import follow
-from music.links import music
+
 
 app = Flask(__name__)
 
@@ -49,30 +48,15 @@ app.config['SESSION_COOKIE_SAMESITE'] = 'Lax'
 # Database Configuration
 app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DATABASE_URL')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-app.config["SQLALCHEMY_ENGINE_OPTIONS"] = {
-"pool_pre_ping": True,
-"pool_recycle": 300,
-"pool_size": 5,
-"max_overflow": 0,
-}
 
-app.config['GOOGLE_CLIENT_ID'] = os.getenv('GOOGLE_CLIENT_ID')
-app.config['GOOGLE_CLIENT_SECRET'] = os.getenv('GOOGLE_CLIENT_SECRET')
-app.config['GOOGLE_REDIRECT_URI'] = os.getenv('GOOGLE_REDIRECT_URI')  
-
-app.config['FACEBOOK_APP_ID'] = os.getenv('FACEBOOK_APP_ID')
-app.config['FACEBOOK_APP_SECRET'] = os.getenv('FACEBOOK_APP_SECRET')
-app.config['FACEBOOK_REDIRECT_URI'] = os.getenv('FACEBOOK_REDIRECT_URI') 
 
 
 app.config['SECRET_KEY'] = os.getenv('SECRET_KEY')
 
-app_logger.init_app(app)
+
 
 # Register Blueprints
 app.register_blueprint(security, url_prefix='/security')
-app.register_blueprint(follow, url_prefix='/follow')
-app.register_blueprint(music, url_prefix='/music')
 
 db.init_app(app)
 jwt = JWTManager(app)
