@@ -1,7 +1,7 @@
 from flask import Flask
 from flask_jwt_extended import JWTManager
 from datetime import timedelta
-from app.extensions import db, migrate
+from extensions import db, migrate
 import os
 from dotenv import load_dotenv
 load_dotenv()
@@ -10,6 +10,7 @@ from flask_cors import CORS
 sys.path.append('.')
 
 from security.auth import security
+from documents.routes import documents
 
 
 app = Flask(__name__)
@@ -55,6 +56,7 @@ app.config['JJWT_SECRET_KEY'] = os.getenv('JWT_SECRET_KEY')
 
 # Register Blueprints
 app.register_blueprint(security, url_prefix='/security')
+app.register_blueprint(documents, url_prefix='/documents')
 
 db.init_app(app)
 migrate.init_app(app, db)
