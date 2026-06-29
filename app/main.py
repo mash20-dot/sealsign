@@ -37,8 +37,6 @@ CORS(app, resources={
 app.config["JWT_ACCESS_TOKEN_EXPIRES"] = timedelta(hours=5) 
 app.config['JWT_SECRET_KEY'] = os.getenv('JWT_SECRET_KEY')
 
-# Flask Secret Key (Required for sessions in OAuth)
-app.config['SECRET_KEY'] = os.getenv('SECRET_KEY')
 
 # Session Configuration Required for OAuth state management
 app.config['SESSION_COOKIE_SECURE'] = True  
@@ -51,7 +49,7 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 
 
-app.config['SECRET_KEY'] = os.getenv('SECRET_KEY')
+app.config['JJWT_SECRET_KEY'] = os.getenv('JWT_SECRET_KEY')
 
 
 

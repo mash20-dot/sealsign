@@ -18,7 +18,7 @@ EMAIL_REGEX = r'^[\w\.-]+@[\w\.-]+\.\w+$'
 def send_magic_link_email(user_email, user_name, magic_link):
     try:
         params = {
-            "from": "noreply@sealsign.com",
+            "from": "business@vynfy.com",
             "to": [user_email],
             "subject": "Your SealSign login link",
             "html": f"""
@@ -208,7 +208,7 @@ def securitylogin():
     magic_link = f"https://yourdomain.com/auth/verify-magic-link?token={token}"
 
     # Send email
-    send_magic_link_email(user.email, user.firstname, magic_link)
+    send_magic_link_email(user.email, user.name, magic_link)
 
     return jsonify({
         "message": "Magic link sent to your email. It expires in 15 minutes."
@@ -241,7 +241,7 @@ def verify_magic_link():
     db.session.commit()
 
     # Now issue the JWT
-    access_token = create_access_token(identity=str(user.id))
+    access_token = create_access_token(identity=user.email)
 
     return jsonify({
         "message": "Login successful",
@@ -249,8 +249,7 @@ def verify_magic_link():
         "user": {
             "id": user.id,
             "email": user.email,
-            "firstname": user.firstname,
-            "lastname": user.lastname,
+            "name": user.name,
         }
     }), 200
     
