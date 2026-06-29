@@ -1,7 +1,7 @@
 from flask import Flask
 from flask_jwt_extended import JWTManager
 from datetime import timedelta
-from app.extentions import db
+from app.extensions import db, migrate
 import os
 from dotenv import load_dotenv
 load_dotenv()
@@ -59,6 +59,7 @@ app.config['SECRET_KEY'] = os.getenv('SECRET_KEY')
 app.register_blueprint(security, url_prefix='/security')
 
 db.init_app(app)
+migrate.init_app(app, db)
 jwt = JWTManager(app)
 
 with app.app_context():
