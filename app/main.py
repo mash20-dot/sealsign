@@ -1,7 +1,7 @@
 from flask import Flask
 from flask_jwt_extended import JWTManager
 from datetime import timedelta
-from extensions import db, migrate
+from app.extensions import db, migrate
 import os
 from dotenv import load_dotenv
 load_dotenv()
@@ -65,6 +65,14 @@ jwt = JWTManager(app)
 with app.app_context():
 
     db.create_all()
+
+
+
+
+
+
+
+
 
 
 if __name__ == "__main__":

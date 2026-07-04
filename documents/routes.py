@@ -42,7 +42,14 @@ def convert_docx_to_pdf(file_bytes):
 @documents.route('/upload', methods=['POST'])
 @jwt_required()
 def upload_document():
-    user_id = get_jwt_identity()
+    current_email = get_jwt_identity()
+
+    current_user = User.query.filter_by(email=current_email).first()
+
+    if not current_user:
+        return jsonify({
+            "message": "user not found"
+        }), 400
 
     if 'file' not in request.files:
         return jsonify({"message": "No file provided"}), 400
@@ -73,7 +80,7 @@ def upload_document():
         stored_filename = original_filename
 
     # Generate unique key for R2
-    file_key = f"documents/{user_id}/{uuid.uuid4()}/{stored_filename}"
+    file_key = f"documents/{current_user.id}/{uuid.uuid4()}/{stored_filename}"
 
     upload_file(file_bytes, file_key, mime_type)
 
@@ -81,7 +88,7 @@ def upload_document():
     title = request.form.get('title') or original_filename.rsplit('.', 1)[0]
 
     doc = Document(
-        user_id=user_id,
+        user_id=current_user.id,
         title=title,
         original_filename=original_filename,
         file_key=file_key,
@@ -103,14 +110,23 @@ def upload_document():
     }), 201
 
 
-@documents.route('/', methods=['GET'])
+@documents.route('/all', methods=['GET'])
 @jwt_required()
 def list_documents():
-    user_id = get_jwt_identity()
+    current_email = get_jwt_identity()
+
+    current_user = User.query.filter_by(email=current_email).first()
+
+    if not current_user:
+        return jsonify({
+            "user": "user not found"
+        }), 400
+    
+
     status = request.args.get('status')
     search = request.args.get('search')
 
-    query = Document.query.filter_by(user_id=user_id)
+    query = Document.query.filter_by(user_id=current_user.id)
 
     if status:
         query = query.filter_by(status=status)
@@ -136,8 +152,10 @@ def list_documents():
 @documents.route('/<int:doc_id>', methods=['GET'])
 @jwt_required()
 def get_document(doc_id):
-    user_id = get_jwt_identity()
-    doc = Document.query.filter_by(id=doc_id, user_id=user_id).first()
+    current_email = get_jwt_identity()
+
+    current_user = User.query.filter_by(email=current_email).first()
+    doc = Document.query.filter_by(id=doc_id, user_id=current_user.id).first()
 
     if not doc:
         return jsonify({"message": "Document not found"}), 404
@@ -157,8 +175,16 @@ def get_document(doc_id):
 @documents.route('/<int:doc_id>/download', methods=['GET'])
 @jwt_required()
 def download_document(doc_id):
-    user_id = get_jwt_identity()
-    doc = Document.query.filter_by(id=doc_id, user_id=user_id).first()
+    current_email = get_jwt_identity()
+
+    current_user = User.query.filter_by(email=current_email).first()
+
+    if not current_user:
+        return jsonify({
+            "message": "user not found"
+        }), 400
+    
+    doc = Document.query.filter_by(id=doc_id, user_id=current_user.id).first()
 
     if not doc:
         return jsonify({"message": "Document not found"}), 404
@@ -171,8 +197,18 @@ def download_document(doc_id):
 @documents.route('/<int:doc_id>', methods=['DELETE'])
 @jwt_required()
 def delete_document(doc_id):
-    user_id = get_jwt_identity()
-    doc = Document.query.filter_by(id=doc_id, user_id=user_id).first()
+    current_email = get_jwt_identity()
+
+    current_user = User.query.filter_by(email=current_email).first()
+
+    if not current_user:
+        return jsonify({
+
+            "message": "user not found"
+        }), 400
+    
+    
+    doc = Document.query.filter_by(id=doc_id, user_id=current_user.id).first()
 
     if not doc:
         return jsonify({"message": "Document not found"}), 404
