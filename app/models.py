@@ -26,3 +26,32 @@ class Document(db.Model):
     updated_at = db.Column(db.DateTime, nullable=False, default=datetime.utcnow, onupdate=datetime.utcnow)
 
     user = db.relationship('User', backref=db.backref('documents', lazy=True))
+
+
+class DocumentField(db.Model):
+    __tablename__ = 'document_fields'
+
+    id = db.Column(db.Integer, primary_key=True)
+    document_id = db.Column(db.Integer, db.ForeignKey('documents.id'), nullable=False)
+    field_type = db.Column(db.String(50), nullable=False)  # signature, initials, date, text
+    page = db.Column(db.Integer, nullable=False, default=1)
+    x = db.Column(db.Float, nullable=False)
+    y = db.Column(db.Float, nullable=False)
+    width = db.Column(db.Float, nullable=False)
+    height = db.Column(db.Float, nullable=False)
+    value = db.Column(db.Text, nullable=True)  # filled in after signing
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+
+    document = db.relationship('Document', backref=db.backref('fields', lazy=True))
+
+
+class AuditLog(db.Model):
+    __tablename__ = 'audit_logs'
+
+    id = db.Column(db.Integer, primary_key=True)
+    document_id = db.Column(db.Integer, db.ForeignKey('documents.id'), nullable=False)
+    event = db.Column(db.String(100), nullable=False)  # signed, voided
+    ip_address = db.Column(db.String(50), nullable=True)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+
+    document = db.relationship('Document', backref=db.backref('audit_logs', lazy=True))

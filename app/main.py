@@ -11,7 +11,7 @@ sys.path.append('.')
 
 from security.auth import security
 from documents.routes import documents
-
+from sign.routes import sign
 
 app = Flask(__name__)
 
@@ -57,6 +57,9 @@ app.config['JJWT_SECRET_KEY'] = os.getenv('JWT_SECRET_KEY')
 # Register Blueprints
 app.register_blueprint(security, url_prefix='/security')
 app.register_blueprint(documents, url_prefix='/documents')
+app.register_blueprint(sign, url_prefix='/sign')
+
+
 
 db.init_app(app)
 migrate.init_app(app, db)
